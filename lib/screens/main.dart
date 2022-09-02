@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:df/df.dart';
+import 'package:cashflow_view/backend/bank_statement/data_rows.dart';
+import 'package:cashflow_view/backend/transaction_table.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -32,18 +30,17 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  late DataFrame df;
+  late TransactionTable transactionTable;
 
   void _bankStatementSelectionButtonOnPress() async {
     FilePickerResult? selection = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['csv'],
-        dialogTitle: 'Select csv file'
+        dialogTitle: 'Select bank statement .csv file'
     );
     if (selection != null) {
-      File(selection.paths[0]!).readAsLines(encoding: latin1).then((value) => {
-        value.forEach((element) { print(element); })
-      });
+      final List<String> dataRows = await extractBankStatementDataRows(selection.paths.first!);
+      transactionTable = TransactionTable.fromBankStatementDataRows(dataRows);
     }
   }
 }
