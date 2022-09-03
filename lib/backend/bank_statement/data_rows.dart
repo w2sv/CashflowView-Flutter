@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cashflow_view/utils/collections.dart';
+import 'package:cashflow_view/utils/dart/collections.dart';
 
 Future<List<String>> extractBankStatementDataRows(String bankStatementPath) =>
     File(bankStatementPath).readAsLines(encoding: latin1).then(_dataRows);
