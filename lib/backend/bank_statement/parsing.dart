@@ -1,4 +1,4 @@
-const String delimiter = ';';
+const String bankStatementEntryDelimiter = ';';
 const Map<String, int> col2Index = {
   'date': 0,
   'type': 2,
@@ -28,4 +28,8 @@ const Map<String, TransactionType> identifier2TransactionType = {
   'SEPA-Überweisung an': TransactionType.sepaTransactionOut,
   'Kartenzahlung': TransactionType.cardPayment,
   'Auszahlung Geldautomat': TransactionType.atmCashOut
+};
+
+const Map<String, String> currencyRepresentation2Target = {
+  'EUR': '€'
 };

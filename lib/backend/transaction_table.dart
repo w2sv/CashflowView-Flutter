@@ -1,3 +1,5 @@
+import 'package:cashflow_view/utils/dart/numeric.dart';
+import 'package:df/df.dart';
 import 'package:intl/intl.dart';
 
 import 'bank_statement/parsing.dart';
@@ -7,49 +9,44 @@ enum FlowKind {
   expenses
 }
 
-class TransactionTable {
-  final List<DateTime> date;
-  final List<TransactionType> type;
-  final List<String> partner;
-  final List<String> purpose;
-  final List<double> volume;
-  final String currency;
+typedef RowMaps = List<Map<String, dynamic>>;
 
-  TransactionTable(
-      this.date,
-      this.type,
-      this.partner,
-      this.purpose,
-      this.volume,
-      this.currency
-    );
+TransactionTable transactionTableFromBankStatementDataRows(List<String> dataRows){
+  RowMaps rowMaps = [];
 
-  factory TransactionTable.fromBankStatementDataRows(List<String> dataRows){
-    List<DateTime> date = [];
-    List<TransactionType> type = [];
-    List<String> partner = [];
-    List<String> purpose = [];
-    List<double> volume = [];
+  List<List<String>> csvRows = dataRows.map((e) => e.split(bankStatementEntryDelimiter)).toList(growable: false);
 
-    for (List<String> csvRow in dataRows.map((e) => e.split(delimiter))) {
-      String getVal(String colName) => csvRow[col2Index[colName]!];
+  for (List<String> csvRow in csvRows){
+    String getVal(String col) => csvRow[col2Index[col]!];
 
-      date.add(DateFormat('dd.MM.yyyy').parse(getVal('date')));
-      type.add(identifier2TransactionType[getVal('type')] ?? TransactionType.unknown);
-      partner.add(getVal('partner'));
-      purpose.add(getVal('purpose'));
-      volume.add(double.parse([getVal('expense'), getVal('revenue')].firstWhere((String s) => s.isNotEmpty).replaceAll(',', '.')));
-    }
-
-    return TransactionTable(
-        date,
-        type,
-        partner,
-        purpose,
-        volume,
-        dataRows.first.split(delimiter)[col2Index['currency']!]
+    rowMaps.add(
+        {
+          'date': DateFormat('dd.MM.yyyy').parse(getVal('date')),
+          'type': identifier2TransactionType[getVal('type').replaceAll('"', '')] ?? TransactionType.unknown,
+          'partner': getVal('partner'),
+          'purpose': getVal('purpose'),
+          'figure': double.parse([getVal('expense'), getVal('revenue')].firstWhere((String s) => s.isNotEmpty).replaceAll(',', '.'))
+        }
     );
   }
 
-  late List<bool> revenueMask = volume.map((e) => e >= 0).toList(growable: false);
+  final String currency = csvRows.first[col2Index['currency']!];
+
+  return TransactionTable.fromRows(
+      rowMaps,
+      currencyRepresentation2Target[currency] ?? currency
+  );
+}
+
+class TransactionTable extends DataFrame {
+  late final String currency;
+
+  TransactionTable.fromRows(RowMaps rows, this.currency)
+      : super.fromRows(rows);
+
+  late List<bool> revenueMask = colRecords<double>('figure')
+      .map((e) => e! >= 0)
+      .toList(growable: false);
+
+  late double total = sum_('figure').rounded(2);
 }

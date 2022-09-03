@@ -66,7 +66,7 @@ class _MainScreenState extends State<MainScreen> {
     );
     if (selection != null) {
       final List<String> dataRows = await extractBankStatementDataRows(selection.paths.first!);
-      transactionTable = TransactionTable.fromBankStatementDataRows(dataRows);
+      transactionTable = transactionTableFromBankStatementDataRows(dataRows);
       refresh();
     }
   }

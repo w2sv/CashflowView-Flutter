@@ -40,6 +40,7 @@ dependencies:
   test: ^1.21.4
   csv: ^5.0.1
   intl: ^0.17.0
+  df: ^0.4.0-nullsafety.0
 
 dev_dependencies:
   flutter_test:
