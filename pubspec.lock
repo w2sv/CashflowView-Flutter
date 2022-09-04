@@ -51,7 +51,7 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       url: "https://pub.dartlang.org"
@@ -92,6 +92,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  data_table_2:
+    dependency: "direct main"
+    description:
+      name: data_table_2
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.6"
   df:
     dependency: "direct main"
     description:
