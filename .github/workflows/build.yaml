@@ -1,4 +1,4 @@
-name: Unit Test
+name: Build
 
 on: [push, pull_request]
 
@@ -16,4 +16,8 @@ jobs:
         run: flutter pub get
 
       - name: Run unit tests
-        run: flutter test
+        run: flutter test --coverage
+
+      - name: Upload coverage to codecov
+        run: curl -s https://codecov.io/bash
+        shell: bash
