@@ -42,7 +42,7 @@ dependencies:
   collection: ^1.16.0
   data_table_2: ^2.3.6
   df:
-    git: git@github.com:w2sv/df.git
+    git: https://github.com/w2sv/df
 
 dev_dependencies:
   flutter_test:

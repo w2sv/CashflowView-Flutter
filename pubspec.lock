@@ -105,7 +105,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: a3a1b41c51c6f38807ddf3c9db68c5d39ee89f37
-      url: "git@github.com:w2sv/df.git"
+      url: "https://github.com/w2sv/df"
     source: git
     version: "0.4.1"
   fake_async:
