@@ -1,19 +1,19 @@
 import 'dart:io';
 
 import 'package:cashflow_view/backend/bank_statement/data_rows.dart';
-import 'package:cashflow_view/backend/bank_statement/parsing.dart';
 import 'package:cashflow_view/backend/transaction_table.dart';
+import 'package:cashflow_view/backend/transaction_type.dart';
 import 'package:test/test.dart';
 
-import 'fixtures.dart';
+import '../utils.dart';
 
 void main() {
   late List<String> bankStatementDataRows;
   late TransactionTable table;
 
   setUp(() async{
-    File _bankStatement = await bankStatement('08.07.2021 - 31.12.2021.csv');
-    bankStatementDataRows = await extractBankStatementDataRows(_bankStatement.path);
+    File bankStatement = await getBankStatement('08.07.2021 - 31.12.2021.csv');
+    bankStatementDataRows = await extractBankStatementDataRows(bankStatement.path);
 
     table = transactionTableFromBankStatementDataRows(bankStatementDataRows);
   });

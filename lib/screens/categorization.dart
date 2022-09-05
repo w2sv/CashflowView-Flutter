@@ -1,5 +1,5 @@
-import 'package:cashflow_view/backend/bank_statement/parsing.dart';
 import 'package:cashflow_view/backend/transaction_table.dart';
+import 'package:cashflow_view/backend/transaction_type.dart';
 import 'package:cashflow_view/utils/dart/collections.dart';
 import 'package:cashflow_view/utils/dart/date.dart';
 import 'package:cashflow_view/utils/dart/enum.dart';

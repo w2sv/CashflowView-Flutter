@@ -102,17 +102,12 @@ packages:
   df:
     dependency: "direct main"
     description:
-      name: df
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0-nullsafety.0"
-  extra_pedantic:
-    dependency: transitive
-    description:
-      name: extra_pedantic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.5.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: a3a1b41c51c6f38807ddf3c9db68c5d39ee89f37
+      url: "git@github.com:w2sv/df.git"
+    source: git
+    version: "0.4.1"
   fake_async:
     dependency: transitive
     description:
@@ -218,7 +213,7 @@ packages:
       name: jiffy
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "5.0.0"
   js:
     dependency: transitive
     description:
@@ -289,13 +284,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.2"
-  pedantic:
-    dependency: transitive
-    description:
-      name: pedantic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.11.1"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -400,7 +388,7 @@ packages:
     source: hosted
     version: "1.2.1"
   test:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: test
       url: "https://pub.dartlang.org"
