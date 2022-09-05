@@ -1,9 +1,8 @@
 import 'package:cashflow_view/backend/transaction_table.dart';
 import 'package:cashflow_view/backend/transaction_type.dart';
-import 'package:cashflow_view/utils/dart/collections.dart';
-import 'package:cashflow_view/utils/dart/date.dart';
-import 'package:cashflow_view/utils/dart/enum.dart';
-import 'package:cashflow_view/utils/flutter/state.dart';
+import 'package:cashflow_view/utils/collections.dart';
+import 'package:cashflow_view/utils/date.dart';
+import 'package:cashflow_view/utils/enum.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +60,7 @@ class _CategorizationScreenState extends State<CategorizationScreen> {
                 onSelectChanged: (_){
                   _selected[row.key] = !_selected[row.key];
 
-                  refresh();
+                  setState(() {});
                 },
                 selected: _selected[row.key]
               )

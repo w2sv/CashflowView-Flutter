@@ -1,7 +1,7 @@
 import 'package:cashflow_view/backend/bank_statement/parsing.dart';
 import 'package:cashflow_view/backend/transaction_type.dart';
-import 'package:cashflow_view/utils/dart/collections.dart';
-import 'package:cashflow_view/utils/dart/numeric.dart';
+import 'package:cashflow_view/utils/collections.dart';
+import 'package:cashflow_view/utils/numeric.dart';
 import 'package:df/df.dart';
 
 enum FlowKind {

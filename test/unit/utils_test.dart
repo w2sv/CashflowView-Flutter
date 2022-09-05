@@ -1,4 +1,4 @@
-import 'package:cashflow_view/utils/dart/collections.dart';
+import 'package:cashflow_view/utils/collections.dart';
 import 'package:test/test.dart';
 
 void main(){
