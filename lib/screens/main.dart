@@ -21,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
         widthFactor: 0.4,
         heightFactor: 0.1,
         child: ElevatedButton(
-            onPressed: () => _bankStatementSelectionButtonOnPress(_rerouteToCategorization),
+            onPressed: () => _bankStatementSelectionButtonOnPress(_pushCategorizationScreen),
             child: const Text('Select bank statement'),
           ),
       ),
@@ -41,7 +41,7 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  void _rerouteToCategorization(TransactionTable table) =>
+  void _pushCategorizationScreen(TransactionTable table) =>
       Navigator.push(
           context,
           MaterialPageRoute(

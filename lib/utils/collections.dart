@@ -25,6 +25,6 @@ extension MapExtensions<K, V> on Map<K, V>{
 
 Iterable<bool> invertedMask(Iterable<bool> mask) sync*{
   for (bool el in mask) {
-    yield el;
+    yield !el;
   }
 }

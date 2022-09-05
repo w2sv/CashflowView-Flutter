@@ -1,9 +1,5 @@
 import 'package:cashflow_view/backend/transaction_table.dart';
-import 'package:cashflow_view/backend/transaction_type.dart';
-import 'package:cashflow_view/utils/collections.dart';
-import 'package:cashflow_view/utils/date.dart';
-import 'package:cashflow_view/utils/enum.dart';
-import 'package:data_table_2/data_table_2.dart';
+import 'package:cashflow_view/widgets/data_table.dart';
 import 'package:flutter/material.dart';
 
 class CategorizationScreen extends StatefulWidget {
@@ -16,78 +12,48 @@ class CategorizationScreen extends StatefulWidget {
 }
 
 class _CategorizationScreenState extends State<CategorizationScreen> {
-  int? _sortColumnIndex;
-  bool _sortAscending = true;
-  late List<bool> _selected;
+  late final StatefulDataTable expensesTable = StatefulDataTable(widget.table.expenses, setState);
+  late final StatefulDataTable revenuesTable = StatefulDataTable(widget.table.revenues, setState);
 
-  @override
-  void initState() {
-    super.initState();
-
-    _selected = List.filled(widget.table.length, false);
-  }
+  bool _displayRevenues = false;
+  late StatefulDataTable _flowTable = expensesTable;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Categorization'),
-        centerTitle: true,
+        title: Text('Uncategorized ${_displayRevenues ? 'Revenues' : 'Expenses'}'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: DataTable2(
-          sortColumnIndex: _sortColumnIndex,
-          sortAscending: _sortAscending,
-          showCheckboxColumn: true,
-          columns: [
-            DataColumn(label: const Text('Date'), onSort: _onSort),
-            DataColumn(label: const Text('Type'), onSort: _onSort),
-            DataColumn(label: const Text('Partner'), onSort: _onSort),
-            DataColumn(label: const Text('Purpose'), onSort: _onSort),
-            DataColumn(label: const Text('Volume'), onSort: _onSort)
-          ],
-          rows: [
-            for (var row in widget.table.rows.toList().asMap().entries)
-              DataRow(
-                cells: [
-                  DataCell(Text(row.value.getCasted<String>('date'))),
-                  DataCell(Text(transactionTypeName.getValue(row.value.getCasted<TransactionType>('type')))),
-                  DataCell(Text(row.value.getCasted<String>('partner'))),
-                  DataCell(Text(row.value.getCasted<String>('purpose'))),
-                  DataCell(Text("${row.value.getCasted<double>('figure').toStringAsFixed(2)}${widget.table.currency}")),
-                ],
-                onSelectChanged: (_){
-                  _selected[row.key] = !_selected[row.key];
-
-                  setState(() {});
-                },
-                selected: _selected[row.key]
-              )
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Switch(
+                  value: _displayRevenues,
+                  activeColor: Colors.green,
+                  inactiveThumbColor: const Color.fromARGB(255, 231, 27, 58),
+                  inactiveTrackColor: const Color.fromARGB(255, 229, 107, 127),
+                  onChanged: (_){
+                    _displayRevenues = !_displayRevenues;
+                    setState(() {
+                      _flowTable = _displayRevenues ? revenuesTable : expensesTable;
+                    });
+                  }
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 9,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: _flowTable.widget()
+            ),
+          ),
+        ],
       ),
     );
-  }
-
-  void _onSort(int columnIndex, bool sortAscending){
-    String colName = widget.table.columnsNames[columnIndex];
-
-    int compareAsComparables(Object? a, Object? b) =>
-        sortAscending ? (a as Comparable).compareTo(b as Comparable) : (b as Comparable).compareTo(a as Comparable);
-
-    widget.table.sort(
-      colName,
-      compare: {
-        'type': (a, b) => sortAscending ? (a as Enum).compareTo(b as Enum) : (b as Enum).compareTo(a as Enum),
-        'date': (a, b) => compareAsComparables(toDateTime(a as String), toDateTime(b as String))
-      }
-        .getOrFallback(colName, compareAsComparables),
-    );
-
-    setState(() {
-      _sortAscending = sortAscending;
-      _sortColumnIndex = columnIndex;
-    });
   }
 }
