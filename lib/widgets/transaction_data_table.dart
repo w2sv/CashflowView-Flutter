@@ -31,12 +31,14 @@ class _TransactionDataTableState extends State<TransactionDataTable> {
           sortColumnIndex: _sortColumnIndex,
           sortAscending: _sortAscending,
           showCheckboxColumn: true,
+          smRatio: 0.4,
+          lmRatio: 1.8,
           columns: [
-            DataColumn(label: const Text('Date'), onSort: _onSort),
-            DataColumn(label: const Text('Type'), onSort: _onSort),
-            DataColumn(label: const Text('Partner'), onSort: _onSort),
-            DataColumn(label: const Text('Purpose'), onSort: _onSort),
-            DataColumn(label: const Text('Volume'), onSort: _onSort)
+            DataColumn2(label: const Text('Date'), onSort: _onSort, size: ColumnSize.S),
+            DataColumn2(label: const Text('Type'), onSort: _onSort, size: ColumnSize.M),
+            DataColumn2(label: const Text('Partner'), onSort: _onSort, size: ColumnSize.M),
+            DataColumn2(label: const Text('Purpose'), onSort: _onSort, size: ColumnSize.L),
+            DataColumn2(label: const Text('Volume'), onSort: _onSort, size: ColumnSize.S)
           ],
           rows: [
             for (var row in widget.table.rows.toList().asMap().entries)

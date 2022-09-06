@@ -1,4 +1,5 @@
 import 'package:cashflow_view/backend/transaction_table.dart';
+import 'package:cashflow_view/type_aliases.dart';
 import 'package:cashflow_view/widgets/transaction_data_table.dart';
 import 'package:flutter/material.dart';
 
@@ -33,10 +34,10 @@ class _FlowWidgetState extends State<FlowWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
-          flex: 9,
+          flex: 7,
           child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: _dataTable
@@ -47,29 +48,30 @@ class _FlowWidgetState extends State<FlowWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
-                  child: ElevatedButton(
-                    onPressed: _submitCategoryOnPress,
-                    child: const Text('Add to')),
+                  child: FractionallySizedBox(
+                    widthFactor: 0.3,
+                    child: ElevatedButton(
+                      onPressed: _submitCategoryOnPress,
+                      child: const Text('Add to')),
+                  ),
                 ),
                 Flexible(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: DropdownButton<String>(
-                          items: [
-                            for (var c in _categories)
-                              DropdownMenuItem<String>(value: c, child: Text(c))
-                          ],
-                          onChanged: (value) => setState(() {
-                                _selectedCategory = value!;
-                              }),
-                          value: _selectedCategory
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: FractionallySizedBox(
+                        widthFactor: 0.45,
+                        child: DropdownButton<String>(
+                            isExpanded: true,
+                            items: [
+                              for (var c in _categories)
+                                DropdownMenuItem<String>(value: c, child: Text(c))
+                            ],
+                            onChanged: (value) => setState(() {
+                                  _selectedCategory = value!;
+                                }),
+                            value: _selectedCategory
+                        ),
                       ),
-                    )
-                ),
-                Flexible(
-                    child: IconButton(
-                        onPressed: _categoryAdditionDialog,
-                        icon: const Icon(Icons.add_circle_outlined)
                     )
                 ),
                 Flexible(
@@ -85,67 +87,44 @@ class _FlowWidgetState extends State<FlowWidget> {
     );
   }
 
-  Future<void> _categoryAdditionDialog() async {
-    TextEditingController textController = TextEditingController();
-
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('Add ${widget.flowTitle} category'),
-              content: TextField(
-                controller: textController,
-                decoration:
-                    const InputDecoration(hintText: "Enter new category"),
-              ),
-              actions: [
-                ValueListenableBuilder(
-                  valueListenable: textController,
-                  builder: (context, value, child) => ElevatedButton(
-                      onPressed: value.text.isEmpty ? null : () {
-                        if (_categories.contains(value.text)) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(
-                              content: Text(
-                                  '${value.text} is already amongst categories!'),
-                            ));
-                          } else {
-                            setState(() {
-                              _categories.add(textController.text);
-                              _selectedCategory = textController.text;
-                              Navigator.pop(context);
-                            });
-                          }
-                        },
-                      child: const Text('Submit')),
-                )
-              ],
-            ));
-  }
-
   Future<void> _categoryEditingDialog() async {
     return showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
-        builder: (context, setInnerState) => AlertDialog(
-          title: Text('Edit ${widget.flowTitle} Categories'),
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text('Configure ${widget.flowTitle} Categories'),
           content: SizedBox(
-            width: 800,
-            height: 800,
-            child: ListView(
-              shrinkWrap: true,
+            height: MediaQuery.of(context).size.height * 0.55,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                for (String category in _categories)
-                  ListTile(
-                    title: Text(category),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setInnerState(() {
-                          _categories.remove(category);
-                        });
-                      },
+                Flexible(
+                  flex: 6,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        for (String category in _categories)
+                          ListTile(
+                            title: Text(category),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setDialogState(() {
+                                  _categories.remove(category);
+                                });
+                              },
+                            ),
+                          )
+                      ],
                     ),
-                  )
+                  ),
+                ),
+                Flexible(
+                    child: _categoryAdditionForm(setDialogState)
+                )
               ],
             ),
           ),
@@ -158,6 +137,56 @@ class _FlowWidgetState extends State<FlowWidget> {
           ],
         ),
       ),
-    ).then((value) => setState((){}));
+    )
+        .then((value) => setState((){}));
+  }
+
+  Widget _categoryAdditionForm(SetState setDialogState){
+    final textController = TextEditingController();
+    
+    void onSubmitted(String text){
+      if (_categories.contains(text)) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$text is already amongst categories!'),
+        ));
+      } 
+      else {
+        setDialogState(() {
+          _categories.add(textController.text);
+          _selectedCategory = textController.text;
+          textController.clear();
+        });
+      }
+    }
+
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+            top: BorderSide(
+              color: Color.fromARGB(255, 108, 108, 108),
+            )
+        )
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+              child: TextField(
+                onSubmitted: onSubmitted,
+                controller: textController,
+                decoration:
+                const InputDecoration(hintText: "Enter new category"),
+              )
+          ),
+          Flexible(
+              child: ValueListenableBuilder(
+                valueListenable: textController,
+                builder: (context, value, child) => ElevatedButton(
+                    onPressed: value.text.isEmpty ? null : () => onSubmitted(value.text),
+                    child: const Text('Submit')),
+              )
+          )
+        ],
+      ),
+    );
   }
 }

@@ -1,0 +1,1 @@
+typedef SetState = void Function(void Function());
