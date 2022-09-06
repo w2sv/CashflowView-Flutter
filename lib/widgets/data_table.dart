@@ -1,4 +1,5 @@
 import 'package:cashflow_view/backend/transaction_table.dart';
+import 'package:cashflow_view/utils/bool.dart';
 import 'package:cashflow_view/utils/collections.dart';
 import 'package:cashflow_view/utils/enum.dart';
 import 'package:data_table_2/data_table_2.dart';
@@ -11,8 +12,13 @@ class StatefulDataTable{
   int? _sortColumnIndex;
   bool _sortAscending = true;
   final List<bool> _selected;
+  int _nSelectedRows = 0;
+  bool hasSelectedRows = false;
   final TransactionTableBase _table;
   late final void Function(void Function()) _setState;
+
+  List<String> categories = ['Yolo', 'Diggie'];
+  String selectedCategory = 'Yolo';
   
   StatefulDataTable(this._table, this._setState)
       : _selected = List<bool>.filled(_table.length, false);
@@ -39,10 +45,11 @@ class StatefulDataTable{
                   DataCell(Text(row.value.getCasted<String>('purpose'))),
                   DataCell(Text("${row.value.getCasted<double>('figure').toStringAsFixed(2)}${_table.currency}")),
                 ],
-                onSelectChanged: (_){
-                  _selected[row.key] = !_selected[row.key];
-                  _setState((){});
-                },
+                onSelectChanged: (val) => _setState((){
+                  _selected[row.key] = val!;
+                  _nSelectedRows += val.toOpposingInt();
+                  hasSelectedRows = _nSelectedRows != 0;
+                }),
                 selected: _selected[row.key]
             )
         ],
