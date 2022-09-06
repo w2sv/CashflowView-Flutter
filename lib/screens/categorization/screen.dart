@@ -1,5 +1,7 @@
 import 'package:cashflow_view/backend/transaction_table.dart';
 import 'package:cashflow_view/screens/categorization/flow_widget.dart';
+import 'package:cashflow_view/utils/bool.dart';
+import 'package:cashflow_view/utils/numeric.dart';
 import 'package:flutter/material.dart';
 
 class CategorizationScreen extends StatefulWidget {
@@ -12,11 +14,13 @@ class CategorizationScreen extends StatefulWidget {
 }
 
 class _CategorizationScreenState extends State<CategorizationScreen> {
-  late final _expensesWidget = FlowWidget(widget.table.expenses, 'Expenses', key: UniqueKey());
-  late final _revenuesWidget = FlowWidget(widget.table.revenues, 'Revenues', key: UniqueKey());
+  late final _flowWidgets = [
+    FlowWidget(widget.table.expenses, 'Expenses', key: UniqueKey()),
+    FlowWidget(widget.table.revenues, 'Revenues', key: UniqueKey())
+  ];
 
-  bool _displayRevenues = false;
-  FlowWidget get _flowWidget => _displayRevenues ? _revenuesWidget : _expensesWidget;
+  int _flowIndex = 0;
+  FlowWidget get _flowWidget => _flowWidgets[_flowIndex];
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +34,13 @@ class _CategorizationScreenState extends State<CategorizationScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Switch(
-                    value: _displayRevenues,
+                    value: _flowIndex.toBool(),
                     activeColor: Colors.green,
                     inactiveThumbColor: const Color.fromARGB(255, 231, 27, 58),
                     inactiveTrackColor: const Color.fromARGB(255, 229, 107, 127),
-                    onChanged: (_) {
+                    onChanged: (val) {
                       setState(() {
-                        _displayRevenues = !_displayRevenues;
+                        _flowIndex = val.toInt();
                       });
                     }
                 ),
@@ -44,7 +48,10 @@ class _CategorizationScreenState extends State<CategorizationScreen> {
             ),
             Flexible(
               flex: 10,
-              child: _flowWidget,
+              child: IndexedStack(
+                  index: _flowIndex,
+                  children: _flowWidgets
+              ),
             )
           ],
         )
