@@ -16,19 +16,9 @@ class FlowWidget extends StatefulWidget {
 
 class _FlowWidgetState extends State<FlowWidget> {
   final List<String> _categories = ['Yolo', 'Diggie'];
-  late String _selectedCategory = _categories[0];
+  late String? _selectedCategory = _categories[0];
 
-  VoidCallback? _submitCategoryOnPress;
-
-  late final _dataTable = TransactionDataTable(widget.flowTable, (val) {
-    setState(() {
-      if (val == 0) {
-        _submitCategoryOnPress = null;
-      } else {
-        _submitCategoryOnPress = () => {};
-      }
-    });
-  });
+  VoidCallback? _submitCategoryButtonOnPress;
 
   @override
   Widget build(BuildContext context) {
@@ -40,40 +30,50 @@ class _FlowWidgetState extends State<FlowWidget> {
           flex: 7,
           child: Padding(
               padding: const EdgeInsets.all(12.0),
-              child: _dataTable
+              child: TransactionDataTable(widget.flowTable, onNumberOfSelectedRowsChange: (val) {
+                setState(() {
+                  if (val == 0 || _selectedCategory == null) {
+                    _submitCategoryButtonOnPress = null;
+                  } else {
+                    _submitCategoryButtonOnPress = () => {};
+                  }
+                });
+              })
           ),
         ),
         Flexible(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  child: FractionallySizedBox(
-                    widthFactor: 0.3,
-                    child: ElevatedButton(
-                      onPressed: _submitCategoryOnPress,
-                      child: const Text('Add to')),
+                if (_selectedCategory != null)
+                  Flexible(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.3,
+                      child: ElevatedButton(
+                        onPressed: _submitCategoryButtonOnPress,
+                        child: const Text('Add to')),
+                    ),
                   ),
-                ),
-                Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0),
-                      child: FractionallySizedBox(
-                        widthFactor: 0.45,
-                        child: DropdownButton<String>(
-                            isExpanded: true,
-                            items: [
-                              for (var c in _categories)
-                                DropdownMenuItem<String>(value: c, child: Text(c))
-                            ],
-                            onChanged: (value) => setState(() {
-                                  _selectedCategory = value!;
-                                }),
-                            value: _selectedCategory
+                if (_categories.isNotEmpty)
+                  Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12.0),
+                        child: FractionallySizedBox(
+                          widthFactor: 0.45,
+                          child: DropdownButton<String>(
+                              isExpanded: true,
+                              items: [
+                                for (var c in _categories)
+                                  DropdownMenuItem<String>(value: c, child: Text(c))
+                              ],
+                              onChanged: (value) => setState(() {
+                                    _selectedCategory = value!;
+                                  }),
+                              value: _selectedCategory
+                          ),
                         ),
-                      ),
-                    )
-                ),
+                      )
+                  ),
                 Flexible(
                     child: IconButton(
                         onPressed: _categoryEditingDialog,
@@ -88,6 +88,8 @@ class _FlowWidgetState extends State<FlowWidget> {
   }
 
   Future<void> _categoryEditingDialog() async {
+    final nameConfigurationTextController = TextEditingController();
+
     return showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -106,14 +108,43 @@ class _FlowWidgetState extends State<FlowWidget> {
                     child: ListView(
                       shrinkWrap: true,
                       children: [
-                        for (String category in _categories)
+                        for (var category in _categories.asMap().entries)
+                          category.value == nameConfigurationTextController.text ?
+                              Focus(
+                                onFocusChange: (hasFocus){
+                                  if (hasFocus == false){
+                                    setDialogState((){
+                                      nameConfigurationTextController.clear();
+                                    });
+                                  }
+                                },
+                                child: TextField(
+                                  autofocus: true,
+                                  controller: nameConfigurationTextController,
+                                  onSubmitted: (val){
+                                    if (val.isNotEmpty) {
+                                      setDialogState((){
+                                      _categories[category.key] = val;
+                                      nameConfigurationTextController.clear();
+                                    });
+                                    }
+                                  },
+                                ),
+                              )
+                            :
                           ListTile(
-                            title: Text(category),
+                            title: GestureDetector(
+                                onTap: () => setDialogState(() {
+                                  nameConfigurationTextController.text = category.value;
+                                }),
+                                child: Text(category.value)
+                            ),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
                                 setDialogState(() {
-                                  _categories.remove(category);
+                                  _categories.removeAt(category.key);
+                                  _selectedCategory = _categories.isEmpty ? null : _categories[category.key.clamp(0, _categories.length - 1)];
                                 });
                               },
                             ),
@@ -174,7 +205,7 @@ class _FlowWidgetState extends State<FlowWidget> {
                 onSubmitted: onSubmitted,
                 controller: textController,
                 decoration:
-                const InputDecoration(hintText: "Enter new category"),
+                const InputDecoration(hintText: 'Enter new category'),
               )
           ),
           Flexible(

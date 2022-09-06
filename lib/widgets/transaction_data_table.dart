@@ -10,9 +10,9 @@ import '../utils/date.dart';
 
 class TransactionDataTable extends StatefulWidget {
   final TransactionTableBase table;
-  final void Function(int) onRowSelectionChange;
+  final void Function(int) onNumberOfSelectedRowsChange;
 
-  const TransactionDataTable(this.table, this.onRowSelectionChange, {Key? key}) 
+  const TransactionDataTable(this.table, {required this.onNumberOfSelectedRowsChange, Key? key}) 
       : super(key: key);
 
   @override
@@ -53,7 +53,7 @@ class _TransactionDataTableState extends State<TransactionDataTable> {
                   onSelectChanged: (val) => setState((){
                     _selected[row.key] = val!;
                     _nSelectedRows += val.toOpposingInt();
-                    widget.onRowSelectionChange(_nSelectedRows);
+                    widget.onNumberOfSelectedRowsChange(_nSelectedRows);
                   }),
                   selected: _selected[row.key]
               )
