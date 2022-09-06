@@ -30,13 +30,6 @@ class _FlowWidgetState extends State<FlowWidget> {
   });
 
   @override
-  void dispose() {
-    super.dispose();
-
-    print('disposed ${widget.flowTitle} widget');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
