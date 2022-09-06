@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cashflow_view/backend/bank_statement/data_rows.dart';
 import 'package:cashflow_view/backend/transaction_table.dart';
-import 'package:cashflow_view/screens/categorization.dart';
+import 'package:cashflow_view/screens/categorization/screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
