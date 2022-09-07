@@ -2,6 +2,7 @@ import 'package:cashflow_view/backend/transaction_table.dart';
 import 'package:cashflow_view/type_aliases.dart';
 import 'package:cashflow_view/widgets/transaction_data_table.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FlowWidget extends StatefulWidget {
   final FlowSpecificTransactionTable flowTable;
@@ -18,72 +19,67 @@ class _FlowWidgetState extends State<FlowWidget> {
   final List<String> _categories = ['Yolo', 'Diggie'];
   late String? _selectedCategory = _categories[0];
 
-  VoidCallback? _submitCategoryButtonOnPress;
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Flexible(
-          flex: 7,
-          child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TransactionDataTable(widget.flowTable, onNumberOfSelectedRowsChange: (val) {
-                setState(() {
-                  if (val == 0 || _selectedCategory == null) {
-                    _submitCategoryButtonOnPress = null;
-                  } else {
-                    _submitCategoryButtonOnPress = () => {};
-                  }
-                });
-              })
+    return ChangeNotifierProvider(
+      create: (context) => TransactionDataTableModel(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            flex: 7,
+            child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: TransactionDataTable(widget.flowTable)
+            ),
           ),
-        ),
-        Flexible(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (_selectedCategory != null)
-                  Flexible(
-                    child: FractionallySizedBox(
-                      widthFactor: 0.3,
-                      child: ElevatedButton(
-                        onPressed: _submitCategoryButtonOnPress,
-                        child: const Text('Add to')),
-                    ),
-                  ),
-                if (_categories.isNotEmpty)
-                  Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: FractionallySizedBox(
-                          widthFactor: 0.45,
-                          child: DropdownButton<String>(
-                              isExpanded: true,
-                              items: [
-                                for (var c in _categories)
-                                  DropdownMenuItem<String>(value: c, child: Text(c))
-                              ],
-                              onChanged: (value) => setState(() {
-                                    _selectedCategory = value!;
-                                  }),
-                              value: _selectedCategory
-                          ),
+          Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_selectedCategory != null)
+                    Flexible(
+                      child: FractionallySizedBox(
+                        widthFactor: 0.3,
+                        child: Consumer<TransactionDataTableModel>(
+                          builder: (context, model, child) => ElevatedButton(
+                            onPressed: model.anyRowsSelected && _categories.isNotEmpty ? () => {} : null,
+                            child: const Text('Add to')),
                         ),
+                      ),
+                    ),
+                  if (_categories.isNotEmpty)
+                    Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: FractionallySizedBox(
+                            widthFactor: 0.45,
+                            child: DropdownButton<String>(
+                                isExpanded: true,
+                                items: [
+                                  for (var c in _categories)
+                                    DropdownMenuItem<String>(value: c, child: Text(c))
+                                ],
+                                onChanged: (value) => setState(() {
+                                      _selectedCategory = value!;
+                                    }),
+                                value: _selectedCategory
+                            ),
+                          ),
+                        )
+                    ),
+                  Flexible(
+                      child: IconButton(
+                          onPressed: _categoryEditingDialog,
+                          icon: const Icon(Icons.edit)
                       )
-                  ),
-                Flexible(
-                    child: IconButton(
-                        onPressed: _categoryEditingDialog,
-                        icon: const Icon(Icons.edit)
-                    )
-                )
-              ],
-            )
-        )
-      ],
+                  )
+                ],
+              )
+          )
+        ],
+      ),
     );
   }
 
@@ -174,12 +170,12 @@ class _FlowWidgetState extends State<FlowWidget> {
 
   Widget _categoryAdditionForm(SetState setDialogState){
     final textController = TextEditingController();
-    
+
     void onSubmitted(String text){
       if (_categories.contains(text)) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$text is already amongst categories!'),
         ));
-      } 
+      }
       else {
         setDialogState(() {
           _categories.add(textController.text);

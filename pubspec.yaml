@@ -43,6 +43,7 @@ dependencies:
   data_table_2: ^2.3.6
   df:
     git: https://github.com/w2sv/df
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:
