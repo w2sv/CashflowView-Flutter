@@ -4,6 +4,7 @@ import 'package:cashflow_view/utils/bool.dart';
 import 'package:cashflow_view/utils/collections.dart';
 import 'package:cashflow_view/utils/date.dart';
 import 'package:cashflow_view/utils/enum.dart';
+import 'package:cashflow_view/utils/object.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -82,9 +83,8 @@ class _TransactionDataTableState extends State<TransactionDataTable> {
   void _onSort(int columnIndex, bool sortAscending) {
     String colName = widget.table.columnsNames[columnIndex];
 
-    int compareAsComparables(Object? a, Object? b) => sortAscending
-        ? (a as Comparable).compareTo(b as Comparable)
-        : (b as Comparable).compareTo(a as Comparable);
+    int compareAccountingForDirection(Object? a, Object? b) =>
+        sortAscending ? compareAsComparables(a, b) : compareAsComparables(b, a);
 
     widget.table.sort(
       colName,
@@ -92,9 +92,10 @@ class _TransactionDataTableState extends State<TransactionDataTable> {
         'type': (a, b) => sortAscending
             ? (a as Enum).compareTo(b as Enum)
             : (b as Enum).compareTo(a as Enum),
-        'date': (a, b) => compareAsComparables(
+        'date': (a, b) => compareAccountingForDirection(
             toDateTime(a as String), toDateTime(b as String))
-      }.getOrFallback(colName, compareAsComparables),
+      }
+        .getOrFallback(colName, compareAccountingForDirection),
     );
 
     setState(() {
