@@ -21,14 +21,14 @@ class _MainScreenState extends State<MainScreen> {
         widthFactor: 0.4,
         heightFactor: 0.1,
         child: ElevatedButton(
-            onPressed: () => _bankStatementSelectionButtonOnPress(_pushCategorizationScreen),
+            onPressed: () => _bankStatementSelectionButtonOnPress(),
             child: const Text('Select bank statement'),
           ),
       ),
     );
   }
 
-  void _bankStatementSelectionButtonOnPress(void Function (TransactionTable) onSuccess) async {
+  void _bankStatementSelectionButtonOnPress() async {
     FilePickerResult? selection = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['csv'],
@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
     );
     if (selection != null) {
       final List<String> dataRows = await extractBankStatementDataRows(selection.paths.first!);
-      onSuccess(transactionTableFromBankStatementDataRows(dataRows));
+      _pushCategorizationScreen(transactionTableFromBankStatementDataRows(dataRows));
     }
   }
 

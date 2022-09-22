@@ -99,15 +99,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.6"
-  df:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: a3a1b41c51c6f38807ddf3c9db68c5d39ee89f37
-      url: "https://github.com/w2sv/df"
-    source: git
-    version: "0.4.1"
   fake_async:
     dependency: transitive
     description:
@@ -221,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  koala:
+    dependency: "direct main"
+    description:
+      name: koala
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.2"
   lints:
     dependency: transitive
     description:

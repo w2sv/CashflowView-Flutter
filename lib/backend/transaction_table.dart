@@ -2,7 +2,8 @@ import 'package:cashflow_view/backend/bank_statement/parsing.dart';
 import 'package:cashflow_view/backend/transaction_type.dart';
 import 'package:cashflow_view/utils/collections.dart';
 import 'package:cashflow_view/utils/numeric.dart';
-import 'package:df/df.dart';
+import 'package:collection/collection.dart';
+import 'package:koala/koala.dart';
 
 enum FlowKind {
   revenues,
@@ -40,25 +41,25 @@ class TransactionTableBase extends DataFrame {
   late final String currency;
 
   TransactionTableBase.fromRows(RowMaps rows, this.currency)
-      : super.fromRows(rows);
+      : super.fromRowMaps(rows);
 
-  late double total = sum_('figure').rounded(2);
+  late double total = this<double>('figure').sum.rounded(2);
 }
 
 class TransactionTable extends TransactionTableBase{
   TransactionTable.fromRows(RowMaps rows, {required String currency})
       : super.fromRows(rows, currency);
 
-  late List<bool> revenueMask = colRecords<double>('figure')
-      .map((e) => e! >= 0)
+  late List<bool> revenueMask = this<double>('figure')
+      .map((e) => e >= 0)
       .toList(growable: false);
 
   late FlowSpecificTransactionTable expenses = FlowSpecificTransactionTable.fromRows(
-      rows.applyMask(invertedMask(revenueMask)),
+      rowMaps().applyMask(invertedMask(revenueMask)),
       currency: currency
   );
   late FlowSpecificTransactionTable revenues = FlowSpecificTransactionTable.fromRows(
-      rows.applyMask(revenueMask),
+      rowMaps().applyMask(revenueMask),
       currency: currency
   );
 }

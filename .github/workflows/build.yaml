@@ -16,7 +16,14 @@ jobs:
         run: flutter pub get
 
       - name: Run unit tests
-        run: flutter test --coverage
+        run: |
+          # Download bank statements from Google Drive
+          pip install gdown
+          gdown --folder ${{ secrets.BANK_STATEMENTS_DIR_LINK }}
+          mv bank-statements test/bank-statements
+          
+          # Run tests
+          flutter test --coverage
 
       - name: Upload coverage to codecov
         run: |

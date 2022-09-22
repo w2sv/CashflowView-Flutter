@@ -13,6 +13,7 @@ coverage/
 
 # IntelliJ related
 *.iml
+
 *.ipr
 *.iws
 .idea/
@@ -43,3 +44,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Bank Statements
+/test/bank-statements/
